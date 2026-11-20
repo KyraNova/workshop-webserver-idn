@@ -34,8 +34,6 @@ cd ~/project-web
 git clone https://github.com/KyraNova/workshop-webserver-idn.git
 ```
 
-Ganti `KyraNova` dengan username GitHub pemilik repo workshop (diberikan instruktur).
-
 Masuk ke folder website:
 
 ```bash
