@@ -31,10 +31,10 @@ cd ~/project-web
 ## 3. Clone repository workshop
 
 ```bash
-git clone https://github.com/<USERNAME>/workshop-webserver-idn.git
+git clone https://github.com/KyraNova/workshop-webserver-idn.git
 ```
 
-Ganti `<USERNAME>` dengan username GitHub pemilik repo workshop (diberikan instruktur).
+Ganti `KyraNova` dengan username GitHub pemilik repo workshop (diberikan instruktur).
 
 Masuk ke folder website:
 

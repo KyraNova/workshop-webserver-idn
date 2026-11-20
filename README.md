@@ -22,7 +22,7 @@ Ringkasan target: setelah workshop kamu bisa menjelaskan fungsi web server, meng
 
 ```bash
 # di VM kamu (sebagai user peserta, dengan sudo)
-git clone https://github.com/<USERNAME>/workshop-webserver-idn.git
+git clone https://github.com/KyraNova/workshop-webserver-idn.git
 cd workshop-webserver-idn
 ```
 
