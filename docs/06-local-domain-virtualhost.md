@@ -1,6 +1,6 @@
 # 06 — Local Domain & Virtual Host
 
-Tujuan: membuka website dengan nama `http://halloween.local` alih-alih IP.
+Tujuan: membuka website dengan nama `http://halloween.local` dan `http://games.local` alih-alih IP.
 
 ## Alur
 
@@ -24,19 +24,11 @@ Catat IP pertama (contoh: `172.23.0.2`).
 
 ## 2. Buat Virtual Host untuk halloween
 
-Salin contoh config dari repo (`configs/halloween.local.conf`):
-
 ```bash
 sudo cp ~/project-web/workshop-webserver-idn/configs/halloween.local.conf /etc/apache2/sites-available/halloween.conf
 ```
 
-Atau buat manual:
-
-```bash
-sudo nano /etc/apache2/sites-available/halloween.conf
-```
-
-Isi:
+Atau buat manual dengan `sudo nano /etc/apache2/sites-available/halloween.conf`:
 
 ```apache
 <VirtualHost *:80>
@@ -78,8 +70,6 @@ Tambahkan satu baris ke file hosts laptop, isi IP VM kamu:
 192.168.x.x   halloween.local
 ```
 
-Ganti `192.168.x.x` dengan IP VM kamu.
-
 | OS | File hosts |
 |----|-----------|
 | Linux / macOS | `/etc/hosts` (edit dengan `sudo`) |
@@ -87,7 +77,7 @@ Ganti `192.168.x.x` dengan IP VM kamu.
 
 ## 5. Tes
 
-Buka di browser laptop: `http://halloween.local`
+Buka `http://halloween.local` di browser laptop.
 
 Atau tes dari VM tanpa hosts:
 
@@ -95,15 +85,13 @@ Atau tes dari VM tanpa hosts:
 curl -H "Host: halloween.local" http://localhost
 ```
 
-## 6. Membuat web ke-2 dengan Virtual Host
-
-Ulangi langkah yang sama dengan website `kopi`:
+## 6. Virtual Host ke-2: games (Pac-Man)
 
 ```bash
-sudo mkdir -p /var/www/kopi
-sudo cp -r ~/project-web/workshop-webserver-idn/website/kopi/. /var/www/kopi/
-sudo cp ~/project-web/workshop-webserver-idn/configs/kopi.local.conf /etc/apache2/sites-available/kopi.conf
-sudo a2ensite kopi.conf
+sudo mkdir -p /var/www/games
+sudo cp -r ~/project-web/workshop-webserver-idn/website/games/. /var/www/games/
+sudo cp ~/project-web/workshop-webserver-idn/configs/games.local.conf /etc/apache2/sites-available/games.conf
+sudo a2ensite games.conf
 sudo apache2ctl configtest
 sudo systemctl reload apache2
 ```
@@ -111,12 +99,12 @@ sudo systemctl reload apache2
 Tambahkan di file hosts laptop:
 
 ```
-192.168.x.x   kopi.local
+192.168.x.x   games.local
 ```
 
-Lalu buka `http://kopi.local`. Kalau tampil halaman kopi, Virtual Host kedua sudah berjalan.
+Lalu buka `http://games.local`. Game Pac-Man akan tampil dan bisa dimainkan. Kalau halaman kosong, cek console browser (F12).
 
-> Jangan lupa `sudo chown -R www-data:www-data /var/www/kopi` dan `chmod -R 755` seperti di [05](05-permission.md).
+> Jangan lupa `sudo chown -R www-data:www-data /var/www/games` dan `chmod -R 755` seperti di [05](05-permission.md).
 
 ## Troubleshooting
 

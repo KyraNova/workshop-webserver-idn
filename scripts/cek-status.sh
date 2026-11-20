@@ -13,7 +13,7 @@ if sudo apache2ctl configtest 2>&1 | grep -q "Syntax OK"; then ok "konfigurasi v
 
 echo
 echo "== Website =="
-for d in halloween kopi; do
+for d in halloween games; do
   if [ -d "/var/www/$d" ]; then
     owner=$(stat -c '%U:%G' "/var/www/$d")
     if [ "$owner" = "www-data:www-data" ]; then ok "/var/www/$d owner $owner"; else fail "/var/www/$d owner $owner (harus www-data:www-data)"; fi
@@ -28,7 +28,7 @@ sudo apache2ctl -S 2>/dev/null | grep -E "namevhost|port (80|443)" || true
 
 echo
 echo "== Tes HTTP lokal =="
-for h in halloween.local kopi.local; do
+for h in halloween.local games.local; do
   code=$(curl -s -o /dev/null -w "%{http_code}" -H "Host: $h" http://localhost/)
   echo "$h -> HTTP $code"
 done
