@@ -1,0 +1,329 @@
+NASKAH PRESENTASI WORKSHOP WEB SERVER
+Repo: https://github.com/KyraNova/workshop-webserver-idn
+Format: [Slide] = nomor slide di PPT. Kalimat dalam tanda kurung adalah instruksi untuk presenter, jangan dibacakan.
+
+
+[Slide 1] SSID & password WiFi
+Selamat datang di workshop Web Server!
+Pertama, sambungkan laptop kalian ke WiFi IDN dengan password idnmantab.
+
+
+[Slide 2] Judul
+Hari ini kita akan belajar membuat website kita sendiri bisa dibuka di jaringan.
+Kita pakai server sungguhan, yaitu VM milik masing-masing peserta.
+
+
+[Slide 3] Tentang ID-Networkers
+ID-Networkers adalah tempat pelatihan IT. Kami sudah membantu ribuan orang belajar skill baru di bidang IT, dan mendapat rating 5.0 dari klien.
+Materi hari ini berfokus pada Web Server.
+
+
+[Slide 4] Safety induction, ruangan & fasilitas
+P3K ada di lantai 1. Mushallah di lantai 3. Makan siang di rooftop lantai 3.
+Coffee & snack ada di setiap lantai. Toilet juga ada di setiap lantai.
+
+
+[Slide 5] Perkenalan instruktur
+Nama saya Naufal Dzakiy Pratama, System Administrator di IDN Academy.
+Saya biasa mengajar Ansible, Docker, dan MikroTik.
+
+
+[Slide 6] Ayo kenalan!
+Sebelum mulai, coba kenalan dulu.
+Tulis nama, asal, kesibukan, dan harapan kalian di kolom yang disediakan.
+
+
+[Slide 7] Target workshop
+Setelah workshop ini, kalian bisa:
+1. Menjelaskan apa fungsi web server.
+2. Menginstal dan menjalankan Apache2.
+3. Membuat website sederhana dan menampilkannya.
+4. Membuat domain lokal dengan Virtual Host.
+5. Mengaktifkan HTTPS.
+6. Menambahkan Basic Authentication (login sebelum masuk halaman).
+
+
+[Slide 8] Connect VPN
+Sekarang, sambungkan VPN dulu.
+Jika belum bisa, angkat tangan, nanti saya bantu.
+
+
+[Slide 9] VM
+Setiap peserta punya satu VM sendiri.
+Buka spreadsheet dashboard akses SSH. Cari baris yang statusnya "Tersedia".
+Tulis nama kalian di kolom "Nama Peserta". Baris itu jadi milik kalian.
+Salin Command SSH dan Password dari baris itu, lalu login lewat terminal:
+
+    ssh peserta1@172.23.0.2
+
+Ganti peserta1 dan IP sesuai baris kalian.
+
+
+[Slide 10] Apa yang terjadi saat kalian membuka website?
+Coba bayangkan kalian mengetik alamat website di browser.
+Apa yang terjadi di belakang layar?
+
+Jawabannya singkat:
+1. Browser mencari alamat IP dari nama domain.
+2. Browser mengirim permintaan (request) ke server.
+3. Server membalas dengan halaman web (response).
+4. Browser menampilkan halaman itu.
+
+
+[Slide 11] Apa itu Web Server?
+Web server adalah program yang menerima permintaan dari browser, lalu mengirim halaman yang diminta.
+Analoginya seperti pelayan restoran: kamu memesan (request), pelayan mengantar makanan (response).
+
+
+[Slide 12] Client & Server
+Client adalah yang meminta. Contohnya browser, aplikasi di HP, atau aplikasi desktop.
+Server adalah yang melayani. Contohnya web server dan database server.
+
+
+[Slide 13] Layanan Web Server
+Web server yang kita pakai namanya Apache HTTP Server.
+Apache adalah software gratis dan terbuka (open-source) yang melayani website lewat HTTP dan HTTPS.
+
+
+[Slide 14] Kenapa Apache?
+Alasannya:
+- Sudah lama dipakai, jadi stabil.
+- Komunitasnya besar, mudah cari bantuan.
+- Konfigurasinya fleksibel.
+- Bisa menjalankan banyak website sekaligus (Virtual Host).
+- Punya banyak modul tambahan.
+
+
+[Slide 15] Install Apache2
+Sekarang kita install Apache. Ketik perintah ini di VM:
+
+    sudo apt install -y apache2
+
+Setelah selesai, cek apakah Apache sudah jalan:
+
+    sudo systemctl status apache2
+
+Kalau ada tulisan "active (running)", berarti berhasil. Tekan q untuk keluar.
+
+
+[Slide 16] Halaman default Apache
+Buka browser, lalu ketik alamat IP VM kalian, misalnya http://172.23.0.2
+Kalau muncul halaman "Apache2 Ubuntu Default Page", selamat! Apache sudah jalan.
+
+
+[Slide 17] Document Root
+Document root adalah folder tempat Apache menyimpan file website.
+Lokasi default di Ubuntu adalah /var/www/html/
+File pertama yang dibuka adalah index.html.
+
+Cek isinya:
+
+    cd /var/www/html
+    ls -la
+
+
+[Slide 18] Ubah index.html
+Sekarang kita ubah tampilan halaman. Buka file dengan nano:
+
+    sudo nano /var/www/html/index.html
+
+Tulis apa saja, misalnya "Halo dari web server saya!".
+Simpan dengan Ctrl+O lalu Enter. Keluar dengan Ctrl+X.
+Refresh browser, tampilannya akan berubah.
+
+
+[Slide 19] Deploy website dari GitHub
+Sekarang kita tidak menulis website dari nol. Kita ambil dari GitHub.
+Langkahnya:
+1. Pastikan git sudah ada: git --version
+2. Buat folder: mkdir -p ~/project-web && cd ~/project-web
+3. Clone repo workshop:
+
+    git clone https://github.com/KyraNova/workshop-webserver-idn.git
+
+4. Masuk ke folder website:
+
+    cd ~/project-web/workshop-webserver-idn/website
+
+Di dalamnya ada dua website: halloween dan games.
+
+
+[Slide 20] Pindahkan file ke document root
+Kita pindahkan website halloween ke /var/www/halloween:
+
+    sudo mkdir -p /var/www/halloween
+    sudo cp -r ~/project-web/workshop-webserver-idn/website/halloween/. /var/www/halloween/
+
+Cek:
+
+    ls -la /var/www/halloween
+
+
+[Slide 21] Siapa pemilik file ini?
+Setelah dipindah pakai sudo, pemilik file jadi root.
+Tapi Apache berjalan sebagai user www-data.
+Kalau www-data tidak punya izin baca, browser akan menampilkan error 403 Forbidden.
+
+Solusinya:
+
+    sudo chown -R www-data:www-data /var/www/halloween
+    sudo chmod -R 755 /var/www/halloween
+
+Penjelasan singkat:
+- chown mengganti pemilik file.
+- chmod mengatur izin baca dan tulis.
+- 755 artinya pemilik bisa baca, tulis, dan jalankan. Yang lain hanya baca dan jalankan.
+
+
+[Slide 22] Local domain
+Sekarang kita pakai nama, bukan IP.
+Contohnya: http://halloween.local
+
+Laptop kalian akan dibuat mengenali nama itu lewat file hosts.
+Tambahkan satu baris berisi IP VM kalian:
+
+    192.168.x.x   halloween.local
+
+Ganti 192.168.x.x dengan IP VM kalian.
+Linux dan macOS: /etc/hosts (edit dengan sudo).
+Windows: C:\Windows\System32\drivers\etc\hosts (edit sebagai Administrator).
+
+
+[Slide 23] Virtual Host
+Satu server bisa menjalankan banyak website.
+Apache memilih website berdasarkan nama domain yang diminta browser.
+Setiap website punya file konfigurasi sendiri, namanya Virtual Host.
+
+Buat file konfigurasi untuk halloween:
+
+    sudo cp ~/project-web/workshop-webserver-idn/configs/halloween.local.conf /etc/apache2/sites-available/halloween.conf
+
+Aktifkan dan cek:
+
+    sudo a2ensite halloween.conf
+    sudo apache2ctl configtest
+    sudo systemctl reload apache2
+
+Output harus "Syntax OK".
+Matikan halaman default supaya tidak bentrok:
+
+    sudo a2dissite 000-default.conf
+    sudo systemctl reload apache2
+
+Sekarang buka http://halloween.local di browser.
+
+
+[Slide 24] Website kedua: games (Pac-Man)
+Sekarang kita pasang website kedua, yaitu game Pac-Man.
+Ulangi cara yang sama:
+
+    sudo mkdir -p /var/www/games
+    sudo cp -r ~/project-web/workshop-webserver-idn/website/games/. /var/www/games/
+    sudo cp ~/project-web/workshop-webserver-idn/configs/games.local.conf /etc/apache2/sites-available/games.conf
+    sudo a2ensite games.conf
+    sudo apache2ctl configtest
+    sudo systemctl reload apache2
+
+Jangan lupa tambahkan di file hosts laptop:
+    192.168.x.x   games.local
+
+Buka http://games.local dan mainkan.
+Jangan lupa chown dan chmod seperti tadi.
+
+
+[Slide 25] Deploy selesai
+Kalau kedua website sudah bisa dibuka, berarti Virtual Host kalian sudah berjalan.
+Silakan jalankan skrip cek:
+
+    bash scripts/cek-status.sh
+
+
+[Slide 26] HTTP dan HTTPS
+Ada dua cara membuka website:
+- HTTP (port 80): data dikirim teks polos. Mudah disadap.
+- HTTPS (port 443): data dienkripsi dengan TLS. Lebih aman.
+
+SSL adalah nama lama. Sekarang yang dipakai adalah TLS, tapi orang masih sering menyebut SSL.
+
+
+[Slide 27] Membuat sertifikat
+Kita buat sertifikat sendiri (self-signed) dengan OpenSSL.
+Pertama, aktifkan modul SSL:
+
+    sudo a2enmod ssl
+    sudo systemctl restart apache2
+
+Lalu buat sertifikat dan kunci privat:
+
+    sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+      -keyout /etc/ssl/private/halloween.key \
+      -out /etc/ssl/certs/halloween.crt \
+      -subj "/C=ID/ST=Jawa Barat/L=Bandung/O=Workshop/CN=halloween.local"
+
+
+[Slide 28] Virtual Host HTTPS
+Salin config HTTPS:
+
+    sudo cp ~/project-web/workshop-webserver-idn/configs/halloween-ssl.conf /etc/apache2/sites-available/halloween-ssl.conf
+    sudo a2ensite halloween-ssl.conf
+    sudo apache2ctl configtest
+    sudo systemctl reload apache2
+
+Buka https://halloween.local di browser.
+Browser akan memberi peringatan "Your connection is not private". Itu normal untuk sertifikat buatan sendiri.
+Pilih Advanced lalu Proceed (Chrome) atau Accept the Risk (Firefox).
+
+
+[Slide 29] Basic Authentication
+Basic Authentication adalah cara membuat halaman minta username dan password.
+Browser akan menampilkan pop-up login.
+
+Kita buat folder admin dan user admin:
+
+    sudo mkdir -p /var/www/halloween/admin
+    echo "<h1>Area Admin - rahasia</h1>" | sudo tee /var/www/halloween/admin/index.html
+    sudo chown -R www-data:www-data /var/www/halloween
+    sudo htpasswd -c /etc/apache2/.htpasswd admin
+
+Masukkan password saat diminta. Simpan password kalian.
+(Jika htpasswd belum ada: sudo apt install -y apache2-utils)
+
+
+[Slide 30] Terapkan Basic Auth
+Edit config HTTPS:
+
+    sudo nano /etc/apache2/sites-available/halloween-ssl.conf
+
+Tambahkan blok ini di dalam <VirtualHost *:443>:
+
+    <Directory /var/www/halloween/admin>
+        AuthType Basic
+        AuthName "Area Admin Halloween"
+        AuthUserFile /etc/apache2/.htpasswd
+        Require valid-user
+    </Directory>
+
+Simpan, lalu:
+
+    sudo apache2ctl configtest
+    sudo systemctl reload apache2
+
+Buka https://halloween.local/admin/ dan coba login.
+
+
+[Slide 31] Terima kasih
+Hari ini kita sudah belajar:
+1. Web server dan cara kerjanya.
+2. Install dan jalankan Apache2.
+3. Deploy website dari GitHub.
+4. Mengatur izin file (www-data).
+5. Local domain dan Virtual Host.
+6. HTTPS dengan sertifikat sendiri.
+7. Basic Authentication.
+
+Jangan lupa ganti password admin kalian setelah workshop.
+
+
+[Slide 32] See you next time!
+Terima kasih sudah ikut workshop hari ini.
+Sampai jumpa di workshop berikutnya!
